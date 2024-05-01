@@ -17,7 +17,7 @@ export class TodoController {
     public getTodoById = async (req:Request,res:Response)=>{
         const id = +req.params.id
         if(isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number'})
-        //const todo = todos.find(todo => todo.id===id);
+
         const todo = await prisma.todo.findUnique({
             where:{
                 id
@@ -45,7 +45,7 @@ export class TodoController {
             ...req.body,
             id,
         })
-        console.log(updateTodoDTO?.values);
+
         if(error) return res.status(400).json({error});
 
         const todo = await prisma.todo.findUnique({
@@ -77,13 +77,13 @@ export class TodoController {
                 id
             }
         });
-        (todo)? res.json(todo):res.status(404).json({error: `TODO with id ${id} not found`})
+        if(!todo) return res.status(404).json({error: `TODO with id ${id} not found`})
         const deleteTodo = await  prisma.todo.delete({
             where:{
                 id
             }
         });
-        (todo)? res.json(todo):res.status(404).json({error: `TODO with id ${id} not found`})
+        
 
 
         return res.json({status: 'deleted correctly',deleteTodo})
